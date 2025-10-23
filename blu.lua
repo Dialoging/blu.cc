@@ -1,29 +1,20 @@
--- blu.cc – Client-Side Visual ESP
--- Educational use only – all rendering is local
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local SoundService = game:GetService("SoundService") -- Added SoundService
+local SoundService = game:GetService("SoundService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-----------------------------------
--- Sound IDs
-----------------------------------
 local SOUND_IDS = {
-    Click = "rbxassetid://15675059323", -- Your click sound ID
-    Hover = "rbxassetid://10066931761" -- Your hover sound ID
+    Click = "rbxassetid://15675059323",
+    Hover = "rbxassetid://10066931761"
 }
 
-----------------------------------
--- Settings
-----------------------------------
 local Settings = {
     Render = {
-        Tracers   = { Enabled = false, Color = Color3.fromRGB(100,150,255), Thickness = 2 },
-        ESP       = { Enabled = false, Color = Color3.fromRGB(100,150,255), Thickness = 2 },
-        Chams     = { Enabled = false, FillColor = Color3.fromRGB(100,150,255), OutlineColor = Color3.fromRGB(150,200,255) },
+        Tracers    = { Enabled = false, Color = Color3.fromRGB(100,150,255), Thickness = 2 },
+        ESP        = { Enabled = false, Color = Color3.fromRGB(100,150,255), Thickness = 2 },
+        Chams      = { Enabled = false, FillColor = Color3.fromRGB(100,150,255), OutlineColor = Color3.fromRGB(150,200,255) },
         Distance  = { Enabled = false, Color = Color3.new(1,1,1) },
         Nametags  = { Enabled = false, Color = Color3.new(1,1,1) },
         HealthBar = { Enabled = false },
@@ -31,7 +22,7 @@ local Settings = {
         FOVCircle = { Enabled = false, Radius = 100, Color = Color3.new(1,1,1) }
     },
     Combat = {
-        Aimbot       = { Enabled = false },
+        Aimbot     = { Enabled = false },
         TriggerBot   = { Enabled = false },
         SpinBot      = { Enabled = false },
         NoRecoil     = { Enabled = false },
@@ -48,9 +39,6 @@ local Settings = {
     }
 }
 
-----------------------------------
--- Storage
-----------------------------------
 local ESPObjects = {}
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Thickness = 2
@@ -59,14 +47,11 @@ FOVCircle.Filled = false
 FOVCircle.Transparency = 1
 FOVCircle.ZIndex = 999
 
-----------------------------------
--- Helpers
-----------------------------------
 local function PlaySound(soundId)
     local sound = Instance.new("Sound")
     sound.SoundId = soundId
     sound.Volume = 0.5
-    sound.Parent = SoundService -- Or a suitable location like the LocalPlayer's PlayerGui
+    sound.Parent = SoundService
     sound:Play()
     sound.Ended:Wait()
     sound:Destroy()
@@ -81,9 +66,6 @@ local function NewDrawing(type)
     return Drawing.new(type)
 end
 
-----------------------------------
--- ESP Object Class
-----------------------------------
 local function CreateESPForPlayer(player)
     if player == LocalPlayer then return end
 
@@ -100,18 +82,15 @@ local function CreateESPForPlayer(player)
         Chams = {}
     }
 
-    -- Box
     for i = 1, 4 do
         esp.BoxOutline[i] = NewDrawing("Line")
         esp.BoxInline[i] = NewDrawing("Line")
     end
 
-    -- Skeleton
     for i = 1, 6 do
         esp.Skeleton[i] = NewDrawing("Line")
     end
 
-    -- Text
     esp.DistanceText.Size = 14
     esp.DistanceText.Center = true
     esp.DistanceText.Outline = true
@@ -120,7 +99,6 @@ local function CreateESPForPlayer(player)
     esp.NameText.Center = true
     esp.NameText.Outline = true
 
-    -- Health bar
     esp.HealthBarOutline.Thickness = 1
     esp.HealthBarOutline.Filled = false
     esp.HealthBarInline.Filled = true
@@ -132,7 +110,7 @@ local function RemoveESP(esp)
     esp.Tracer:Remove()
     for _, v in ipairs(esp.BoxOutline) do v:Remove() end
     for _, v in ipairs(esp.BoxInline)  do v:Remove() end
-    for _, v in ipairs(esp.Skeleton)   do v:Remove() end
+    for _, v in ipairs(esp.Skeleton)    do v:Remove() end
     esp.DistanceText:Remove()
     esp.NameText:Remove()
     esp.HealthBarOutline:Remove()
@@ -142,9 +120,6 @@ local function RemoveESP(esp)
     end
 end
 
-----------------------------------
--- Update ESP
-----------------------------------
 local function UpdateESP(esp)
     local player = esp.Player
     local char = player.Character
@@ -189,18 +164,16 @@ local function UpdateESP(esp)
     local leg2d  = Camera:WorldToViewportPoint(hrp.Position - Vector3.new(0, 3, 0))
     local color  = isTeam and Color3.fromRGB(100, 255, 100) or Settings.Render.ESP.Color
 
-    -- Tracers
     if Settings.Render.Tracers.Enabled and not isTeam then
         esp.Tracer.Visible = true
         esp.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-        esp.Tracer.To   = Vector2.new(hrp2d.X, hrp2d.Y)
+        esp.Tracer.To    = Vector2.new(hrp2d.X, hrp2d.Y)
         esp.Tracer.Color = Settings.Render.Tracers.Color
         esp.Tracer.Thickness = Settings.Render.Tracers.Thickness
     else
         esp.Tracer.Visible = false
     end
 
-    -- Box ESP
     if Settings.Render.ESP.Enabled and not isTeam then
         local height = math.abs(head2d.Y - leg2d.Y)
         local width  = height / 2
@@ -215,18 +188,17 @@ local function UpdateESP(esp)
             local n = i % 4 + 1
             esp.BoxOutline[i].Visible = true
             esp.BoxOutline[i].From = pts[i]
-            esp.BoxOutline[i].To   = pts[n]
+            esp.BoxOutline[i].To    = pts[n]
             esp.BoxOutline[i].Color = Color3.new(0, 0, 0)
             esp.BoxOutline[i].Thickness = Settings.Render.ESP.Thickness + 1
 
             esp.BoxInline[i].Visible = true
             esp.BoxInline[i].From = pts[i]
-            esp.BoxInline[i].To   = pts[n]
+            esp.BoxInline[i].To    = pts[n]
             esp.BoxInline[i].Color = color
             esp.BoxInline[i].Thickness  = Settings.Render.ESP.Thickness
         end
 
-        -- Health bar
         if Settings.Render.HealthBar.Enabled then
             local pct = hum.Health / hum.MaxHealth
             esp.HealthBarOutline.Visible = true
@@ -251,7 +223,6 @@ local function UpdateESP(esp)
         esp.HealthBarInline.Visible  = false
     end
 
-    -- Skeleton
     if Settings.Render.Skeleton.Enabled and not isTeam then
         local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
         local la = char:FindFirstChild("Left Arm") or char:FindFirstChild("LeftUpperArm")
@@ -273,7 +244,7 @@ local function UpdateESP(esp)
                 if v1.Z > 0 and v2.Z > 0 then
                     esp.Skeleton[i].Visible = true
                     esp.Skeleton[i].From = Vector2.new(v1.X, v1.Y)
-                    esp.Skeleton[i].To   = Vector2.new(v2.X, v2.Y)
+                    esp.Skeleton[i].To    = Vector2.new(v2.X, v2.Y)
                     esp.Skeleton[i].Color = Settings.Render.Skeleton.Color
                     esp.Skeleton[i].Thickness = 1
                 else
@@ -285,7 +256,6 @@ local function UpdateESP(esp)
         for i = 1, 6 do esp.Skeleton[i].Visible = false end
     end
 
-    -- Distance
     if Settings.Render.Distance.Enabled and not isTeam then
         esp.DistanceText.Visible = true
         esp.DistanceText.Position = Vector2.new(hrp2d.X, leg2d.Y + 5)
@@ -295,7 +265,6 @@ local function UpdateESP(esp)
         esp.DistanceText.Visible = false
     end
 
-    -- Nametags
     if Settings.Render.Nametags.Enabled and not isTeam then
         esp.NameText.Visible = true
         esp.NameText.Position = Vector2.new(hrp2d.X, head2d.Y - 15)
@@ -305,7 +274,6 @@ local function UpdateESP(esp)
         esp.NameText.Visible = false
     end
 
-    -- Chams
     if Settings.Render.Chams.Enabled and not isTeam then
         for _, part in pairs(char:GetDescendants()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" and not esp.Chams[part] then
@@ -327,9 +295,6 @@ local function UpdateESP(esp)
     end
 end
 
-----------------------------------
--- Player events
-----------------------------------
 local function OnPlayerAdded(player)
     ESPObjects[player] = CreateESPForPlayer(player)
 end
@@ -345,11 +310,7 @@ for _, player in ipairs(Players:GetPlayers()) do OnPlayerAdded(player) end
 Players.PlayerAdded:Connect(OnPlayerAdded)
 Players.PlayerRemoving:Connect(OnPlayerRemoving)
 
-----------------------------------
--- Render loop
-----------------------------------
 RunService.RenderStepped:Connect(function()
-    -- FOV Circle
     if Settings.Render.FOVCircle.Enabled then
         FOVCircle.Visible = true
         FOVCircle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
@@ -359,21 +320,16 @@ RunService.RenderStepped:Connect(function()
         FOVCircle.Visible = false
     end
 
-    -- Update all ESP
     for player, esp in pairs(ESPObjects) do
         if player and player.Parent then UpdateESP(esp) end
     end
 end)
 
-----------------------------------
--- GUI
-----------------------------------
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "blu.cc"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Main frame
 local Main = Instance.new("Frame")
 Main.Size = UDim2.new(0, 450, 0, 400)
 Main.Position = UDim2.new(0.5, -225, 0.5, -200)
@@ -385,7 +341,6 @@ Main.Parent = ScreenGui
 
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
 
--- Title bar
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 40)
 TitleBar.BackgroundColor3 = Color3.fromRGB(50, 120, 220)
@@ -405,7 +360,6 @@ Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TitleBar
 
--- Close button
 local Close = Instance.new("TextButton")
 Close.Size = UDim2.new(0, 30, 0, 30)
 Close.Position = UDim2.new(1, -35, 0, 5)
@@ -417,13 +371,12 @@ Close.Font = Enum.Font.GothamBold
 Close.Parent = TitleBar
 Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 6)
 
-Close.MouseButton1Click:Connect(function() 
-    PlaySound(SOUND_IDS.Click) -- Added click sound
+Close.MouseButton1Click:Connect(function()  
+    PlaySound(SOUND_IDS.Click)
     ScreenGui:Destroy() 
 end)
-Close.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end) -- Added hover sound
+Close.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end)
 
--- Tab bar
 local TabBar = Instance.new("Frame")
 TabBar.Size = UDim2.new(1, -20, 0, 35)
 TabBar.Position = UDim2.new(0, 10, 0, 50)
@@ -435,7 +388,6 @@ TabLayout.FillDirection = Enum.FillDirection.Horizontal
 TabLayout.Padding = UDim.new(0, 5)
 TabLayout.Parent = TabBar
 
--- Content container
 local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, -20, 1, -105)
 Content.Position = UDim2.new(0, 10, 0, 95)
@@ -472,13 +424,13 @@ local function AddTab(name)
     end)
 
     Button.MouseButton1Click:Connect(function()
-        PlaySound(SOUND_IDS.Click) -- Added click sound
+        PlaySound(SOUND_IDS.Click)
         for _, f in ipairs(Frames) do f.Visible = false end
         for _, b in ipairs(Tabs) do b.BackgroundColor3 = Color3.fromRGB(25, 35, 50) end
         Frame.Visible = true
         Button.BackgroundColor3 = Color3.fromRGB(50, 120, 220)
     end)
-    Button.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end) -- Added hover sound
+    Button.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end)
 
     table.insert(Tabs, Button)
     table.insert(Frames, Frame)
@@ -490,9 +442,6 @@ local CombatTab  = AddTab("Combat")
 local MiscTab    = AddTab("Misc")
 local SettingsTab= AddTab("Settings")
 
-----------------------------------
--- Toggle factory
-----------------------------------
 local function CreateToggle(parent, name, tbl)
     local Frame = Instance.new("Frame")
     Frame.Size = UDim2.new(1, -8, 0, 32)
@@ -524,17 +473,14 @@ local function CreateToggle(parent, name, tbl)
     Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 6)
 
     Button.MouseButton1Click:Connect(function()
-        PlaySound(SOUND_IDS.Click) -- Added click sound
+        PlaySound(SOUND_IDS.Click)
         tbl.Enabled = not tbl.Enabled
         Button.Text = tbl.Enabled and "ON" or "OFF"
         Button.BackgroundColor3 = tbl.Enabled and Color3.fromRGB(50, 200, 100) or Color3.fromRGB(60, 60, 70)
     end)
-    Button.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end) -- Added hover sound
+    Button.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end)
 end
 
-----------------------------------
--- Sliders for Settings tab
-----------------------------------
 local function CreateSlider(parent, name, min, max, value, callback)
     local Frame = Instance.new("Frame")
     Frame.Size = UDim2.new(1, -8, 0, 36)
@@ -567,22 +513,19 @@ local function CreateSlider(parent, name, min, max, value, callback)
     Instance.new("UICorner", Box).CornerRadius = UDim.new(0, 4)
 
     Box.FocusLost:Connect(function()
-        PlaySound(SOUND_IDS.Click) -- Added click sound (on focus lost, as a value change)
+        PlaySound(SOUND_IDS.Click)
         local n = tonumber(Box.Text) or value
         n = math.clamp(n, min, max)
         Box.Text = tostring(n)
         callback(n)
     end)
-    Box.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end) -- Added hover sound
+    Box.MouseEnter:Connect(function() PlaySound(SOUND_IDS.Hover) end)
 end
 
-----------------------------------
--- Populate tabs
-----------------------------------
-do -- Render
-    CreateToggle(RenderTab, "Tracers",   Settings.Render.Tracers)
+do
+    CreateToggle(RenderTab, "Tracers",    Settings.Render.Tracers)
     CreateToggle(RenderTab, "ESP Boxes", Settings.Render.ESP)
-    CreateToggle(RenderTab, "Chams",     Settings.Render.Chams)
+    CreateToggle(RenderTab, "Chams",      Settings.Render.Chams)
     CreateToggle(RenderTab, "Distance",  Settings.Render.Distance)
     CreateToggle(RenderTab, "Nametags",  Settings.Render.Nametags)
     CreateToggle(RenderTab, "Health Bars", Settings.Render.HealthBar)
@@ -590,45 +533,39 @@ do -- Render
     CreateToggle(RenderTab, "FOV Circle", Settings.Render.FOVCircle)
 end
 
-do -- Combat
-    CreateToggle(CombatTab, "Aimbot",       Settings.Combat.Aimbot)
+do
+    CreateToggle(CombatTab, "Aimbot",        Settings.Combat.Aimbot)
     CreateToggle(CombatTab, "Trigger Bot",  Settings.Combat.TriggerBot)
-    CreateToggle(CombatTab, "Spin Bot",     Settings.Combat.SpinBot)
+    CreateToggle(CombatTab, "Spin Bot",      Settings.Combat.SpinBot)
     CreateToggle(CombatTab, "No Recoil",    Settings.Combat.NoRecoil)
-    CreateToggle(CombatTab, "Rapid Fire",   Settings.Combat.RapidFire)
+    CreateToggle(CombatTab, "Rapid Fire",    Settings.Combat.RapidFire)
     CreateToggle(CombatTab, "Infinite Ammo", Settings.Combat.InfiniteAmmo)
 end
 
-do -- Misc
+do
     CreateToggle(MiscTab, "Team Check", Settings.Misc.TeamCheck)
     CreateToggle(MiscTab, "Walk Speed", Settings.Misc.WalkSpeed)
     CreateToggle(MiscTab, "Jump Power", Settings.Misc.JumpPower)
     CreateToggle(MiscTab, "No Clip",    Settings.Misc.NoClip)
-    CreateToggle(MiscTab, "Flight",     Settings.Misc.Flight)
-    CreateToggle(MiscTab, "Anti AFK",   Settings.Misc.AntiAFK)
+    CreateToggle(MiscTab, "Flight",      Settings.Misc.Flight)
+    CreateToggle(MiscTab, "Anti AFK",    Settings.Misc.AntiAFK)
 end
 
-do -- Settings
+do
     CreateSlider(SettingsTab, "ESP Thickness",    1, 5, Settings.Render.ESP.Thickness,
         function(v) Settings.Render.ESP.Thickness = v end)
     CreateSlider(SettingsTab, "Tracer Thickness", 1, 5, Settings.Render.Tracers.Thickness,
         function(v) Settings.Render.Tracers.Thickness = v end)
-    CreateSlider(SettingsTab, "FOV Radius",       30, 300, Settings.Render.FOVCircle.Radius,
+    CreateSlider(SettingsTab, "FOV Radius",        30, 300, Settings.Render.FOVCircle.Radius,
         function(v) Settings.Render.FOVCircle.Radius = v end)
 end
 
-----------------------------------
--- Default tab
-----------------------------------
 Tabs[1].BackgroundColor3 = Color3.fromRGB(50, 120, 220)
 Frames[1].Visible = true
 
-----------------------------------
--- Toggle GUI
-----------------------------------
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
         Main.Visible = not Main.Visible
-        PlaySound(SOUND_IDS.Click) -- Added click sound for GUI toggle
+        PlaySound(SOUND_IDS.Click)
     end
 end)
