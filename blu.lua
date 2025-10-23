@@ -25,7 +25,7 @@ local Settings = {
         InfiniteAmmo = { Enabled = false }
     },
     Misc = {
-        TeamCheck = { Enabled = true },
+        TeamCheck = { Enabled = false },
         WalkSpeed = { Enabled = false, Value = 16 },
         JumpPower = { Enabled = false, Value = 50 },
         NoClip = { Enabled = false },
@@ -563,6 +563,7 @@ CreateToggle(RenderTab, "Skeleton ESP", Settings.Render.Skeleton)
 CreateToggle(RenderTab, "FOV Circle", Settings.Render.FOVCircle)
 
 -- Combat Tab Toggles (Placeholders - for visual only)
+CreateToggle(CombatTab, "Nothing Works Rn", Settings.Combat.Aimbot)
 CreateToggle(CombatTab, "Aimbot", Settings.Combat.Aimbot)
 CreateToggle(CombatTab, "Trigger Bot", Settings.Combat.TriggerBot)
 CreateToggle(CombatTab, "Spin Bot", Settings.Combat.SpinBot)
@@ -571,6 +572,7 @@ CreateToggle(CombatTab, "Rapid Fire", Settings.Combat.RapidFire)
 CreateToggle(CombatTab, "Infinite Ammo", Settings.Combat.InfiniteAmmo)
 
 -- Misc Tab Toggles
+CreateToggle(MiscTab, "Nothing Wotks Rn", Settings.Misc.TeamCheck)
 CreateToggle(MiscTab, "Team Check", Settings.Misc.TeamCheck)
 CreateToggle(MiscTab, "Walk Speed", Settings.Misc.WalkSpeed)
 CreateToggle(MiscTab, "Jump Power", Settings.Misc.JumpPower)
