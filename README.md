@@ -1,5 +1,7 @@
 # Blu.cc
 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Dialoging/blu.cc/main/blu.lua"))()
+
 This is a client-side Lua script designed to provide visual enhancements (ESP) and various utility features in a Roblox environment.
 
 **Disclaimer:** This script is for **educational use only**. Use of scripts to gain an unfair advantage may violate game or platform terms of service. Use at your own risk.
